@@ -21,6 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import JoditEditor from "jodit-react";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
+import { useAddNewProjectMutation } from "@/redux/api/projectApi";
 
 // validation schema for create post
 const ValidationSchema = z.object({
@@ -42,7 +43,7 @@ const CreateProjectPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // const { data, isLoading } = useGetSingleUserQuery({});
-  // const [createPostForBlood] = useCreatePostForBloodMutation();
+  const [addNewProject] = useAddNewProjectMutation();
 
   // const config = {
   //   // readonly: false, // all options from https://xdsoft.net/jodit/doc/
@@ -63,16 +64,16 @@ const CreateProjectPage = () => {
       content: content,
     };
 
-    console.log(postData);
+    console.log("postData", postData);
 
     try {
-      // const res = await createPostForBlood(postData).unwrap();
-      // // console.log(res);
-      // if (res?.id) {
-      //   toast.success("Blood post created successfully!");
-      //   router.push("/posts-for-blood");
-      //   setLoading(false);
-      // }
+      const res = await addNewProject(postData).unwrap();
+      console.log("resr", res);
+      if (res?.success === true) {
+        toast.success("New project added successfully!");
+        // router.push("/posts-for-blood");
+        setLoading(false);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -158,6 +159,18 @@ const CreateProjectPage = () => {
                     }}
                   >
                     {({ open }) => {
+                      return (
+                        <button
+                          type="button"
+                          className="bg-indigo-500 rounded py-2 px-4 text-white"
+                          onClick={() => open()}
+                        >
+                          Upload an Image
+                        </button>
+                      );
+                    }}
+
+                    {/* {({ open }) => {
                       function handleOnClick() {
                         setResource(undefined);
                         open();
@@ -170,7 +183,7 @@ const CreateProjectPage = () => {
                           Upload an Image
                         </button>
                       );
-                    }}
+                    }} */}
                   </CldUploadWidget>
                 </Grid>
 
@@ -197,7 +210,7 @@ const CreateProjectPage = () => {
               <LoadingButton
                 size="small"
                 type="submit"
-                // loading={loading}
+                loading={loading}
                 variant="contained"
                 fullWidth={true}
                 // endIcon={<SendIcon />}
